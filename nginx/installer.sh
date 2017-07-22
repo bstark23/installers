@@ -51,10 +51,10 @@ fi
 #+----------------------------------------------------------------------------+
 cpuCount=$(nproc --all)
 currentPath="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-dhparamBits="4096"
+dhparamBits="256"
 nginxUser="nginx"
 openSslVers="1.0.2k"
-pagespeedVers="1.12.34.2"
+pagespeedVers="latest"
 pcreVers="8.40"
 zlibVers="1.2.11"
 
@@ -124,9 +124,9 @@ nginxSetup()
     #+ https://modpagespeed.com/doc/build_ngx_pagespeed_from_source
     #+------------------------------------------------------------------------+
     cd /usr/local/src/github \
-    && wget https://github.com/pagespeed/ngx_pagespeed/archive/v${pagespeedVers}-beta.zip \
-    && unzip v${pagespeedVers}-beta.zip \
-    && cd ngx_pagespeed-${pagespeedVers}-beta \
+    && wget https://github.com/pagespeed/ngx_pagespeed/archive/${pagespeedVers}-stable.zip \
+    && unzip ${pagespeedVers}-stable.zip \
+    && cd ngx_pagespeed-${pagespeedVers}-stable \
     && export psol_url=https://dl.google.com/dl/page-speed/psol/${pagespeedVers}.tar.gz \
     && [ -e scripts/format_binary_url.sh ] && psol_url=$(scripts/format_binary_url.sh PSOL_BINARY_URL) \
     && wget ${psol_url} \
@@ -137,7 +137,7 @@ nginxSetup()
     #+------------------------------------------------------------------------+
     cd /usr/local/src/github/brotli \
     && python setup.py install
-
+://github.com/pagespeed/ngx_pagespeed/archive/
     #+------------------------------------------------------------------------+
     #+ Configure & Make LibBrotli
     #+------------------------------------------------------------------------+
@@ -169,7 +169,7 @@ nginxSetup()
     #+------------------------------------------------------------------------+
     #+ This process may take a while depending on CPU availbility and speed.
     #+------------------------------------------------------------------------+
-    openssl dhparam -out /etc/nginx/ssl/dhparam.pem ${dhparamBits}
+    #openssl dhparam -out /etc/nginx/ssl/dhparam.pem ${dhparamBits}
 }
 
 nginxCompile()
@@ -229,8 +229,7 @@ nginxCompile()
                         --add-module=/usr/local/src/github/ngx_brotli \
                         --add-module=/usr/local/src/github/headers-more-nginx-module \
                         --add-module=/usr/local/src/github/set-misc-nginx-module \
-                        --add-module=/usr/local/src/github/ngx_pagespeed-${pagespeedVers}-beta \
-    && make -j ${cpuCount} \
+                         && make -j ${cpuCount} \
     && make install
 }
 
